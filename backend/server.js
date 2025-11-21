@@ -17,17 +17,19 @@ const __dirname = path.dirname(__filename);
 // Connect to MongoDB
 connectDB();
 
+// Middleware
+app.use(express.json());
+
 // API routes
 app.use("/api/products", productRoutes);
 
 // Serve frontend in production
 if (process.env.NODE_ENV === "production") {
-  // Make sure frontend is built: frontend/dist (Vite) or frontend/build (CRA)
   const frontendPath = path.join(__dirname, "../frontend/dist");
   app.use(express.static(frontendPath));
 
-  // Catch-all route for client-side routing
-  app.get("*", (req, res) => {
+  // Catch-all route - must use parameter syntax with new path-to-regexp
+  app.get("/:path(.*)", (req, res) => {
     res.sendFile(path.join(frontendPath, "index.html"));
   });
 } else {
