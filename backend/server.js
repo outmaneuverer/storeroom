@@ -10,11 +10,9 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ✅ Fix __dirname for ES Modules
+// Fix __dirname for ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-app.use(express.json());
 
 // Connect to MongoDB
 connectDB();
@@ -24,10 +22,13 @@ app.use("/api/products", productRoutes);
 
 // Serve frontend in production
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "frontend", "dist")));
+  // Make sure frontend is built: frontend/dist (Vite) or frontend/build (CRA)
+  const frontendPath = path.join(__dirname, "../frontend/dist");
+  app.use(express.static(frontendPath));
 
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
+  // Use "/*" instead of "*" for wildcard route
+  app.get("/*", (req, res) => {
+    res.sendFile(path.join(frontendPath, "index.html"));
   });
 } else {
   app.get("/", (req, res) => {
@@ -36,5 +37,5 @@ if (process.env.NODE_ENV === "production") {
 }
 
 app.listen(PORT, () => {
-  console.log(`Server started at http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
