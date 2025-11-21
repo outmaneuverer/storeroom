@@ -26,8 +26,8 @@ if (process.env.NODE_ENV === "production") {
   const frontendPath = path.join(__dirname, "../frontend/dist");
   app.use(express.static(frontendPath));
 
-  // Use "/*" instead of "*" for wildcard route
-  app.get("/*", (req, res) => {
+  // Catch-all route for client-side routing
+  app.get("*", (req, res) => {
     res.sendFile(path.join(frontendPath, "index.html"));
   });
 } else {
